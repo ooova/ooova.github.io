@@ -1,1 +1,0 @@
-# OvArtyomAl.github.io
