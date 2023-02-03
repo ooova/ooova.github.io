@@ -32,8 +32,8 @@ So, if you are lucky and package repository of your operation system has an up t
 
 0. if you have installed any version of arm-none-eabi toolchain, you had better delete it to avoid possible problems related to the different versions are simultaneously installed;
 1. download the actual version of the toolchain from the ARM's website ([from here](https://developer.arm.com/downloads/-/gnu-rm));
-2. unpack it in the directory you want, and (for example) make appropriate aliases for all the needed tools or (according to Aleksander's message above) make symbolic links in your `/usr/bin/` directory.
-~~I personally prefer to make aliases.~~
+2. unpack it in the directory you want, and (according to Aleksander's message above) make symbolic links in your `/usr/bin/` directory or (for example) supplement the PATH environment variable with the actual path to the 'bin' directory within freshly uncompressed archive (`/<path>/<to>/<uncompressed>/<archive>/bin`).
+~~I personally prefer to change the PATH variable.~~
 
 >**Tips:**<br>
 To unpack an archive you can use, for example,<br>
