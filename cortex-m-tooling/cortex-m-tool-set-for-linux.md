@@ -1,7 +1,7 @@
 # Tool set for cortex-m code dev on Linux from the ground up. Common principals.
 
 This post discuss the common concepts of the cross-compiling, explain what you need, and what you have to do to build a binary for your target device.<br>
-To get an example project for an stm32f103 MCU (blue pill) go to [this post](tool-set-example-for-stm32.md).
+To get an example project for an stm32f103 MCU (blue pill) go to [this post](linux-tool-set-example-for-cortex-m.md).
 
 Since you are already here, I suppose you have your own vision of the advantages of using open-source/free tools. If that is not the case, I would say that despite its relatively high entry level, the open-source tools will become a more robust, scalable, and predictable "development environment" than any of the IDEs. This is because you will rely solely on vendor libraries (though, in the case of an IDE, you will also rely on them). One day the IDE developer could tell you, "Hey, we decided not to support 'this' feature any more!" Furthermore, you can organize your development process based on your own preferences instead of the capabilities of a particular IDE and finally create the most convenient "development environment" for you. You should just trust me :)
 
@@ -31,7 +31,7 @@ As stated in [the message](https://askubuntu.com/a/1243405) from [Aleksander Kho
 So, if you are lucky and package repository of your operation system has an up to date version of ARM GNU Toolchain, you can just install it. If not, you have to do as follow:
 
 0. if you have installed any version of arm-none-eabi toolchain, you had better delete it to avoid possible problems related to the different versions are simultaneously installed;
-1. download the actual version of the toolchain from the ARM's website ([from here](https://developer.arm.com/downloads/-/gnu-rm));
+1. download the actual version of the toolchain from the ARM's website ([from here](https://developer.arm.com/downloads/-/arm-gnu-toolchain-download);
 2. unpack it in the directory you want, and (according to Aleksander's message above) make symbolic links in your `/usr/bin/` directory or (for example) supplement the PATH environment variable with the actual path to the 'bin' directory within freshly uncompressed archive (`/<path>/<to>/<uncompressed>/<archive>/bin`).
 ~~I personally prefer to change the PATH variable.~~
 
@@ -120,7 +120,7 @@ On the linux you have several options to flash your firmware to target and debug
 2. use open source and/or free universal tools.
 From my perspective, the second option is more preferable due to it's more flexible, free to use, and usually available for variety of platforms.
 
-[Here is a good post](https://cycling-touring.net/2018/12/flashing-and-debugging-stm32-microcontrollers-under-linux) about how to use the OpenOCD and GDB got flash and debug the firmware on microcontrollers.
+[Here is a good post](https://cycling-touring.net/2018/12/flashing-and-debugging-stm32-microcontrollers-under-linux) about how to use the OpenOCD and GDB for upload and debug the firmware on microcontrollers.
 
 The great benefit of using OpenOCD is the possibility of using one software tool for different target platforms from different vendors and different in-circuit programmers.
 
