@@ -1,12 +1,16 @@
+# Linux tool set example for Cortex-M
+
 ## Brief
+
+>If you found any mistakes or face any problems following this "how to", please do not hesitate to contact me by email: ovsjannik.a@gmail.com
 
 If you need a "blinking LED" example for "Blue Pill" board based on STM32F103C8T6, you are welcome to download [this](https://github.com/ooova/stm32f103c8t6-cmake-blink-example) github repository.<br>
 To do so you can execute<br>
 `git clone --recurse-submodules https://github.com/ooova/stm32f103c8t6-cmake-blink-example`<br>
 command to clone whole repository including all the submodules<br>
 **or:**
-1. download repository as *.zip from https://github.com/ooova/stm32f103c8t6-cmake-blink-example<br>
-2. uncompressed the archive
+1. download repository as [*.zip](https://github.com/ooova/stm32f103c8t6-cmake-blink-example/archive/refs/heads/main.zip)
+2. decompress the archive
 3. go to uncompressed repo directory
 4. execute `git submodule update --init --recursive`
 
@@ -16,7 +20,7 @@ If you need a some more abstract "example"/"step-by-step" guide for any Cortex-M
 
 ### 1 Prepare all the necessary tools
 
-Download an archive with the arm-none-eabi toolchain [form the ARM website](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads) and extract it to any directory. On this webpage you can find 4 versions of the toolchain (at list at the moment of this post writing), but a recommend to use 11.2 - the oldest one because the 12.2 have some problems with newlibc that I do not know how to fix at this moment. For example, I will create for that a separate directory in 'home':
+Download an archive with the arm-none-eabi toolchain [from the ARM website](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads) and extract it to any directory. On this webpage you can find 4 versions of the toolchain (at list at the moment of this post writing), but a recommend to use 11.2 - the oldest one because the 12.2 have some problems with 'newlibc' that I do not know how to fix at this moment. For example, I will create for that a separate directory in 'home':
 ```console
 user@machine:~$ mkdir ~/.bin
 user@machine:~$ cd ~/.bin
@@ -121,7 +125,7 @@ set(ARCH armv<7><-m>)
 set(LIBS_PATH
   <${CMAKE_SOURCE_DIR}>
   )
-set(HAL_PATH
+set(VENDOR_LIBS_PATH
   <${LIBS_PATH}/stm32f1xx_hal_driver>
   )
 set(CMSIS_CORE_PATH
@@ -139,11 +143,11 @@ set(CMSIS_DEV_PATH
 <  ${VENDOR_LIBS_PATH}/Src/*.c>
 <  )>
 # 2nd - use a set() function and enumerate all the needed source files
-<set(HAL_LIBS_SRC>
-<  ${HAL_PATH}/Src/stm32f1xx_hal.c>
-<  ${HAL_PATH}/Src/stm32f1xx_hal_adc.c>
-<  ${HAL_PATH}/Src/stm32f1xx_hal_adc_e>x.c>
-<  ${HAL_PATH}/Src/stm32f1xx_hal_can.c>
+<set(VENDOR_LIBS_SRC>
+<  ${VENDOR_LIBS_PATH}/Src/stm32f1xx_hal.c>
+<  ${VENDOR_LIBS_PATH}/Src/stm32f1xx_hal_adc.c>
+<  ${VENDOR_LIBS_PATH}/Src/stm32f1xx_hal_adc_e>x.c>
+<  ${VENDOR_LIBS_PATH}/Src/stm32f1xx_hal_can.c>
 #  ...
 <  )>
 file(GLOB PRJ_SRC CONFIGURE_DEPENDS
@@ -155,8 +159,8 @@ file(GLOB PRJ_SRC CONFIGURE_DEPENDS
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 # INCLUDE DIRs ==============================================
-set(HAL_LIBS_INC
-  <${HAL_PATH}/Inc>
+set(VENDOR_LIBS_INC
+  <${VENDOR_LIBS_PATH}/Inc>
   )
 set(CMSIS_CORE_LIBS_INC
   <${CMSIS_CORE_PATH}/Include>
@@ -172,24 +176,25 @@ set(PRJ_INC
 
 # LINKER SCRIPT =============================================
 set(LINKER_SCRIPT
-  ${CMAKE_SOURCE_DIR}/<GD32L233Rx>.ld
+  ${CMAKE_SOURCE_DIR}/<STM32F103xB>.ld
   )
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 add_definitions(
   <-DHSE_VALUE=${HSE_VALUE}>
   <-D${DEV_FAMILY}>
+  [-DUSE_HAL_DRIVER] # if using STM microcontroller with HAL library
   )
 
 add_executable(${PROJECT_NAME}.elf
-  ${HAL_LIBS_SRC}
+  ${VENDOR_LIBS_SRC}
   # This file provides two functions SystemInit() and SystemCoreClockUpdate().
   ${CMSIS_DEV_PATH}/<Source>/<Templates>/<system_stm32f1xx>.c
   ${PRJ_SRC}
   )
 
 include_directories(
-  ${HAL_LIBS_INC}
+  ${VENDOR_LIBS_INC}
   ${CMSIS_CORE_LIBS_INC}
   ${CMSIS_DEV_LIBS_INC}
   ${PRJ_INC}
@@ -286,8 +291,9 @@ The above toolchain configuration example is quite universal and I suppose it ca
 
 ### 4 Compose a startup code and a linker script
 
-As I already mentioned in [this post](../cortex-m-tool-set-for-linux.md), we have to compose a startup code and a linker script to "explain" to the linker where to save the code and data and where to load it from.<br>
-To be fare, in some cases we wouldn't develop thous files by ourself because some of vendors provide them with its CMSIS library (for the STM32F1xx it contained in `cmsis_device_f1/Source/Templates/gcc`). But we will do this to learn the technique.
+As I already mentioned in [this post](./cortex-m-tool-set-for-linux.md), we have to compose a startup code and a linker script to "explain" to the linker where to save the code and data and where to load it from.<br>
+
+To be fare, in some cases we wouldn't develop thous files by ourself because some of vendors provide them with its CMSIS library (for the STM32F1xx they are in `cmsis_device_f1/Source/Templates/gcc`). But we will do this to learn the technique.
 
 ### 4.1 Linker script (*.ld)
 
@@ -330,7 +336,7 @@ To place the code to the specific memory section you have to use `__attribute__`
 `__attribute__((section(".isr_vector")))`<br>
 The above line instructs compiler to place the specific variable in the ".isr_vector" section of the object file to give a chance to the linker to place that variable in a proper place if the final binary file.<br>
 In the below code snippets I'm going to show most meaningful parts of startup code
-```C++
+```cpp
 #include <algorithm>
 #include <cstdint>
 
@@ -434,6 +440,7 @@ The build process is pretty simple:
 2. go to the `build` directory
 3. call `cmake` with needed arguments
 4. call `make`
+
 ```console
 user@machine:~/projects/example$ mkdir build
 user@machine:~/projects/example$ cd build
@@ -443,7 +450,7 @@ user@machine:~/projects/example/build$ make
 
 ## 6 Flash firmware and debug
 
-To get an original comprehensive quid visit [this beautiful post](https://cycling-touring.net/2018/12/flashing-and-debugging-stm32-microcontrollers-under-linux).<br>
+To get an original comprehensive guidance visit [this beautiful post](https://cycling-touring.net/2018/12/flashing-and-debugging-stm32-microcontrollers-under-linux).<br>
 In short terms, all that you need are [OpenOCD](https://openocd.org/) as connection server and `GDB` as a debug server for your target device.<br>
 The `GDB` ('arm-none-eabi-gdb') should be already installed if you follow the 1-st paragraph of this post.<br>
 How to deal with OpenOCD:
@@ -451,6 +458,7 @@ How to deal with OpenOCD:
 `sudo apt install openocd`
 2. Start the OpenOCD with an appropriate interface (basically the hardware programmer) config file as a first parameter and a target config file as a second parameter:<br>
 `openocd -f </usr/local/share/openocd/scripts/interface/stlink.cfg> -f </usr/local/share/openocd/scripts/target/stm32f1x.cfg>`
+
 Now you can start `telnet` connection to `openocd` in another console session to be able to upload your firmware into it:<br>
 ```console
 user@machine:~$ telnet localhost 4444

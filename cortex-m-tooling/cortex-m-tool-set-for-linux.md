@@ -31,7 +31,7 @@ As stated in [the message](https://askubuntu.com/a/1243405) from [Aleksander Kho
 So, if you are lucky and package repository of your operation system has an up to date version of ARM GNU Toolchain, you can just install it. If not, you have to do as follow:
 
 0. if you have installed any version of arm-none-eabi toolchain, you had better delete it to avoid possible problems related to the different versions are simultaneously installed;
-1. download the actual version of the toolchain from the ARM's website ([from here](https://developer.arm.com/downloads/-/arm-gnu-toolchain-download);
+1. download the actual version of the toolchain from the ARM's website ([from here](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads));
 2. unpack it in the directory you want, and (according to Aleksander's message above) make symbolic links in your `/usr/bin/` directory or (for example) supplement the PATH environment variable with the actual path to the 'bin' directory within freshly uncompressed archive (`/<path>/<to>/<uncompressed>/<archive>/bin`).
 ~~I personally prefer to change the PATH variable.~~
 
